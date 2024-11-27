@@ -1,5 +1,5 @@
 #include "afficheur.h"
-//#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal_I2C.h>
 
  void Afficheur::Init(){
     lcd.init();
@@ -7,10 +7,12 @@
     lcd.setCursor(0, 0);
     lcd.print(" Digital clock ");
     isClignotement =false;
+
+
  }
 
+
   void Afficheur::Afficher(std::string heure){
-    
     lcd.setCursor(4, 1);
     lcd.print(heure.c_str());
   }
