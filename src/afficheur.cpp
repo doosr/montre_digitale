@@ -1,21 +1,26 @@
 #include "afficheur.h"
-#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal.h>
 
- void Afficheur::Init(){
-    lcd.init();
-    lcd.backlight();
+ void Afficheur::Init() {
+    lcd.begin(16, 2); // Initialize the display with 16 columns and 2 rows
+    lcd.backlight();  // Enable the backlight (if supported by your hardware)
     lcd.setCursor(0, 0);
     lcd.print(" Digital clock ");
-    isClignotement =false;
-
-
- }
-
+    isClignotement = false;
+}
 
   void Afficheur::Afficher(std::string heure){
     lcd.setCursor(4, 1);
     lcd.print(heure.c_str());
   }
+
+void Afficheur::AfficherChrono(const std::string& chrono) {
+    lcd.setCursor(0, 0);
+    lcd.print("   Chronometer   ");
+    lcd.setCursor(4, 1);
+    lcd.print(chrono.c_str());
+}
+
 
   void Afficheur::AfficherSansClignoter(std::string heure){
     lcd.setCursor(0, 0);

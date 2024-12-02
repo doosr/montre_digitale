@@ -6,7 +6,7 @@
 #define MODE_BUTTON         26
 
 //Digital Output
-#define LIGHT               23
+#define LIGHT               27
 
 // Constant
 #define QUARTER_SECOND          250000

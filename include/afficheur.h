@@ -1,9 +1,9 @@
 #include <string>
-#include <LiquidCrystal_I2C.h>
+#include <LiquidCrystal.h>
 
 class Afficheur{
     private:
-        LiquidCrystal_I2C lcd=LiquidCrystal_I2C(0x27, 16, 2); 
+        LiquidCrystal lcd=LiquidCrystal(19, 23, 18, 21, 5, 15);; 
         enum AfficheurStates{
             Stable,
             ClignoteOn,
@@ -25,6 +25,8 @@ class Afficheur{
         void AfficherClignoterMinute(std::string heure);
         void AfficherClignoterSeconde(std::string heure);
         void FsmAfficheur();
+        void AfficherChrono(const std::string& chrono);
+
         void StartTimerClignotement();
         void StopTimerClignotement();
         bool IsEndTimerClignotement();

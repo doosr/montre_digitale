@@ -6,5 +6,5 @@ class Chrono {
     void raz();
     void start();
     void stop();
-    std::string toString();
+       std::string toString();
 };      

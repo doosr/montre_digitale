@@ -21,11 +21,33 @@ bool Montre::IsSet(){
     return digitalRead(SET_BUTTON);
 }
 
+void Montre::FsmModeChrono() {
+    static bool chronoRunning = false;
 
+    if (flagAffichage) {
+        afficheur.AfficherChrono(chrono.toString());
+        flagAffichage = false;
+    }
 
-void Montre::FsmModeChrono(){
+    if (IsStartStop()) {
+        if (chronoRunning) {
+            chrono.stop();
+            chronoRunning = false;
+            Serial.println("Chrono arrêté");
+        } else {
+            chrono.start();
+            chronoRunning = true;
+            Serial.println("Chrono démarré");
+        }
+    }
 
+    if (IsSet()) {
+        chrono.raz();
+        flagAffichage = true;
+        Serial.println("Chrono remis à zéro");
+    }
 }
+
 
 void Montre::ActivateLight(){
   digitalWrite(LIGHT, HIGH);
@@ -64,57 +86,45 @@ bool Montre::IsEndTimerMajHeure1s(){
 
 /// @brief implémentation de la machine à états finis de la montre
 /// @return 
-void  Montre::FsmMontre(){
-  // FSM MAJ Heure
-    if(IsEndTimerMajHeure1s()){
+void Montre::FsmMontre() {
+    // FSM MAJ Heure
+    if (IsEndTimerMajHeure1s()) {
         heure.majHeure();
         flagAffichage = true;
         ArmerTimerMajHeure1s();
     }
+
     // FSM Montre
-    switch(MontreState){
-
-        case MontreStates::ModeAffichage:
-            FsmModeAffichage();
-            if( IsMode())
-                MontreState = MontreStates::ModeChrono;
-        break;
-        case MontreStates::ModeChrono:
-            FsmModeChrono();
-            if( IsMode())
-                MontreState = MontreStates::ModeReglage;
-        break;
-        case MontreStates::ModeReglage:
-            FsmModeReglage();
-            if( IsMode())
-                MontreState = MontreStates::ModeAffichage;
+    switch (MontreState) {
+    case MontreStates::ModeAffichage:
+        FsmModeAffichage();
+        if (IsMode()) {
+            MontreState = MontreStates::ModeChrono;
+            Serial.println("Transition vers Mode Chrono");
+        }
         break;
 
-    }
-    // FSM Light
-    switch (LightState)
-    {
-    case LightStates::LightOff :
-        if(IsLight()){
-            ActivateLight();
-            StartTimerLight2s();
-            LightState = LightStates::LightOn;
+    case MontreStates::ModeChrono:
+        FsmModeChrono();
+        if (IsMode()) {
+            MontreState = MontreStates::ModeReglage;
+            Serial.println("Transition vers Mode Reglage");
         }
         break;
-    case LightStates::LightOn :
-        if(IsLight()){
-            StartTimerLight2s();
-        }
-        if(IsEndTimerLight2s()){
-            DiactivateLight();
-            StopTimerLight2s();
-            LightState = LightStates::LightOff;
+
+    case MontreStates::ModeReglage:
+        FsmModeReglage();
+        if (IsMode()) {
+            MontreState = MontreStates::ModeAffichage;
+            Serial.println("Transition vers Mode Affichage");
         }
         break;
+
     default:
         break;
     }
 }
+
 
 
 void Montre::FsmModeAffichage(){
